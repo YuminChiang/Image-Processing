@@ -16,7 +16,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.image = None
         self.current_views_scenes = {}
         
-        self.assets_path = os.path.join(os.path.dirname(__file__), ".", "assets")
+        self.assets_path = os.path.join(os.path.dirname(__file__), "../", "assets")
 
         self.setup_responsive_layout()
 
