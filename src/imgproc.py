@@ -15,33 +15,24 @@ def median_filter(img, kernel_size=5):
     return np.uint8(med_blur)
 
 def fft_denoise(img, D0=30):
-    # 1. 確保輸入為 2D
     if img.ndim == 3:
         img = img[:, :, 0]
     gray = img.astype(np.float32)
 
-    # 2. FFT 轉換
     dft = cv2.dft(gray, flags=cv2.DFT_COMPLEX_OUTPUT)
     dft_shift = np.fft.fftshift(dft)
 
-    # 3. 建立高斯低通濾波器 (Gaussian Low Pass Filter)
     rows, cols = gray.shape
     crow, ccol = rows // 2, cols // 2
     
-    # 建立網格座標 (修正為穩健寫法)
     x = np.arange(cols) - ccol
     y = np.arange(rows) - crow
     X, Y = np.meshgrid(x, y)
     
-    # 計算距離中心的距離平方 D^2
     D2 = X**2 + Y**2
-    
-    # --- 關鍵差異點 ---
-    # 低通濾波公式: H = exp(-D^2 / (2*D0^2))
-    # 離中心越遠 (高頻)，數值越接近 0 (被刪除)
+
     H = np.exp(-D2 / (2 * (D0**2)))
     
-    # 4. 應用濾波器 (雙通道相乘)
     mask = np.stack([H, H], axis=2)
     fshift = dft_shift * mask
     
@@ -80,7 +71,6 @@ def fft_sharp(img, D0=40, k=1.5):
     v = np.arange(N)
     V, U = np.meshgrid(v, u)
 
-    # 修正中心點計算：這樣更精確對應 fftshift 後的中心
     D = np.sqrt((U - M/2)**2 + (V - N/2)**2)
     
     H_LP = np.exp(-(D**2) / (2 * (D0**2)))
@@ -118,8 +108,6 @@ def gauss_fft(img, cutoff=45):
     X, Y = np.meshgrid(x, y)
     D2 = X**2 + Y**2
 
-    # 高斯低通濾波器公式 (Gaussian Low Pass Filter, GLPF):
-    # H_lp(u,v) = exp( -D^2 / (2 * cutoff^2) )
     mask_gaussian = np.exp(-D2 / (2 * (cutoff**2)))
     mask = np.stack([mask_gaussian, mask_gaussian], axis=2)
 
