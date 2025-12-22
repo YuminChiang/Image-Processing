@@ -4,7 +4,7 @@ import cv2
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 from ui import Ui_MainWindow
-from image_processor import *
+from imgproc import *
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
